@@ -10,7 +10,7 @@ number_of_cities = raw_input('How many cities would you like to visit? Please pr
 if number_of_cities.isdigit() == True:
     Number_of_Cities = int(number_of_cities)
 elif number_of_cities.isdigit() == False:
-    print "Please enter a number and try again."
+    print ("Please enter a number and try again.")
     quit()
 
 for i in range(Number_of_Cities):
@@ -20,7 +20,7 @@ for i in citynames:
     CityNames.append(i.title())
     
 print
-print "These are the cities you entered:", CityNames
+print ("These are the cities you entered:", CityNames)
 
 for i in citynames:
     r = requests.get('''https://maps.googleapis.com/maps/api/geocode/json?address={}&key=AIzaSyBXreCjf8x8_L7-7CW7ymdsV7jLaxuXeRg'''.format(i))
@@ -29,7 +29,7 @@ for i in citynames:
         x_coordinates.append(data['results'][0]['geometry']['location']['lng'])
         y_coordinates.append(data['results'][0]['geometry']['location']['lat'])
     else:
-        print "You have entered a nonexistent city. Please look back at the cities you entered to check for any typos and try again."
+        print ("You have entered a nonexistent city. Please look back at the cities you entered to check for any typos and try again.")
         quit()
 
 starting_pt = (x_coordinates[0],y_coordinates[0])
@@ -168,8 +168,8 @@ for i in ordered_cities:
     Ordered_Cities.append(i.title())
     
 if len(ordered_cities) != len(citynames):
-    print "You have entered a nonexistent city. Please look back at the cities you entered to check for any typos and try again."
+    print ("You have entered a nonexistent city. Please look back at the cities you entered to check for any typos and try again.")
     quit()
 
-print "For the fastest route, visit the cities in this order:", Ordered_Cities
-print "Note: You can start at any city you like, and move clockwise or counter-clockwise through the list and return back to the city you started at."
+print ("For the fastest route, visit the cities in this order:", Ordered_Cities)
+print ("Note: You can start at any city you like, and move clockwise or counter-clockwise through the list and return back to the city you started at.")
