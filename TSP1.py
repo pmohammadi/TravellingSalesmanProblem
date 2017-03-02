@@ -10,7 +10,11 @@ number_of_cities = raw_input('How many cities would you like to visit? Please pr
 if number_of_cities.isdigit() == True:
     Number_of_Cities = int(number_of_cities)
 elif number_of_cities.isdigit() == False:
-    print ("Please enter a number and try again.")
+    print "Please enter an integer and try again."
+    quit()
+NOC_test = int(number_of_cities)
+if NOC_test <= 1:
+    print "You must enter more than 1 city. Please rerun the program and try again."
     quit()
 
 for i in range(Number_of_Cities):
@@ -20,7 +24,7 @@ for i in citynames:
     CityNames.append(i.title())
     
 print
-print ("These are the cities you entered:", CityNames)
+print "These are the cities you entered:", CityNames
 
 for i in citynames:
     r = requests.get('''https://maps.googleapis.com/maps/api/geocode/json?address={}&key=AIzaSyBXreCjf8x8_L7-7CW7ymdsV7jLaxuXeRg'''.format(i))
@@ -29,14 +33,12 @@ for i in citynames:
         x_coordinates.append(data['results'][0]['geometry']['location']['lng'])
         y_coordinates.append(data['results'][0]['geometry']['location']['lat'])
     else:
-        print ("You have entered a nonexistent city. Please look back at the cities you entered to check for any typos and try again.")
+        print "You have entered a nonexistent city. Please look back at the cities you entered to check for any typos and try again."
         quit()
 
 starting_pt = (x_coordinates[0],y_coordinates[0])
 x_coordinates.remove(x_coordinates[0])
 y_coordinates.remove(y_coordinates[0])
-x_coord_len = len(x_coordinates) + 1
-y_coord_len = len(y_coordinates) + 1
 
 lst = []
 n = 0
@@ -45,9 +47,8 @@ for i in range(Number_of_Cities-1):
     n += 1
 sum_long = sum(x_coordinates) + starting_pt[0]
 sum_lat = sum(y_coordinates) + starting_pt[1]
-mean_long = sum_long/float(x_coord_len)
-mean_lat = sum_lat/float(y_coord_len)
-#creating circle with center at mean_long, mean_lat and radius that extends to starting point
+mean_long = sum_long/float(NOC_test)
+mean_lat = sum_lat/float(NOC_test)
 radius_yvalue = mean_lat - starting_pt[1]
 radius_xvalue = mean_long - starting_pt[0]
 radius_length = math.sqrt((radius_yvalue)**2 + (radius_xvalue)**2)
@@ -166,10 +167,38 @@ for i in final_list:
 
 for i in ordered_cities:
     Ordered_Cities.append(i.title())
-    
+
 if len(ordered_cities) != len(citynames):
-    print ("You have entered a nonexistent city. Please look back at the cities you entered to check for any typos and try again.")
+    print "You have entered a nonexistent city. Please look back at the cities you entered to check for any typos and try again."
     quit()
 
-print ("For the fastest route, visit the cities in this order:", Ordered_Cities)
-print ("Note: You can start at any city you like, and move clockwise or counter-clockwise through the list and return back to the city you started at.")
+time_list = []
+for i in Ordered_Cities:
+    time_list.append(i)
+time_list.append(Ordered_Cities[0])
+times = []
+
+print "For the fastest route, visit the cities in this order:", Ordered_Cities
+print "(Note: You can start at any city you like, and move right or left through the list and return back to the city you started at.)"
+
+America = raw_input('Would you like the driving time between the cities, if possible? Y/N    ')
+if America == 'Y':
+    for i in range(NOC_test):
+        origin = time_list[i]
+        destination = time_list[i+1]
+        q = requests.get('''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s&destinations=%s&key=AIzaSyBXreCjf8x8_L7-7CW7ymdsV7jLaxuXeRg''' % (origin, destination))
+        data3 = q.json()
+        test = data3['rows'][0]['elements'][0]
+        if 'duration' in test.keys():
+            pass
+        else:
+            print "Sorry, it is not possible to drive to all the destinations you entered"
+            quit()
+        time = data3['rows'][0]['elements'][0]['duration']['value']
+        times.append(time)
+    round_trip_sec = sum(times)
+    round_trip_hours = round_trip_sec/360
+    round_trip_days = round_trip_hours/24
+    print "If you are driving, it will take you approximately %s hours, or %s days, to complete your journey." % (round_trip_hours, round_trip_days)
+else:
+    print "Okay, fine. Have it your way."
